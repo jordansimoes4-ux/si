@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Phone, Mail, MapPin, Calendar, Clock, Send, CheckCircle } from 'lucide-react';
+import { submitContactRequest } from '../services/api';
+import { Phone, Mail, MapPin, Calendar, Clock, Send, CheckCircle, AlertCircle } from 'lucide-react';
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -11,7 +12,12 @@ const ContactSection = () => {
     guests: '',
     message: ''
   });
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  
+  const [submitState, setSubmitState] = useState({
+    isSubmitting: false,
+    isSuccess: false,
+    error: null
+  });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -19,37 +25,80 @@ const ContactSection = () => {
       ...prev,
       [name]: value
     }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Mock form submission - in real app this would send to backend
-    console.log('Form submitted:', formData);
-    setIsSubmitted(true);
     
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        eventType: '',
-        eventDate: '',
-        guests: '',
-        message: ''
-      });
-    }, 3000);
+    // Clear error when user starts typing
+    if (submitState.error) {
+      setSubmitState(prev => ({ ...prev, error: null }));
+    }
   };
 
-  if (isSubmitted) {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Basic validation
+    if (!formData.name || !formData.email || !formData.eventType) {
+      setSubmitState({
+        isSubmitting: false,
+        isSuccess: false,
+        error: 'Veuillez remplir tous les champs obligatoires'
+      });
+      return;
+    }
+
+    setSubmitState({
+      isSubmitting: true,
+      isSuccess: false,
+      error: null
+    });
+
+    try {
+      await submitContactRequest(formData);
+      
+      setSubmitState({
+        isSubmitting: false,
+        isSuccess: true,
+        error: null
+      });
+      
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        setSubmitState({
+          isSubmitting: false,
+          isSuccess: false,
+          error: null
+        });
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          eventType: '',
+          eventDate: '',
+          guests: '',
+          message: ''
+        });
+      }, 3000);
+      
+    } catch (error) {
+      setSubmitState({
+        isSubmitting: false,
+        isSuccess: false,
+        error: error.message
+      });
+    }
+  };
+
+  // Success state display
+  if (submitState.isSuccess) {
     return (
       <section id="contact" className="py-20 bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-6 animate-pulse" />
           <h2 className="text-3xl font-bold text-white mb-4">Merci pour votre demande !</h2>
-          <p className="text-xl text-gray-300">
+          <p className="text-xl text-gray-300 mb-4">
             Nous avons bien reçu votre message et nous vous recontacterons sous 24h.
+          </p>
+          <p className="text-sm text-gray-400">
+            Vous allez être redirigé vers le formulaire dans quelques secondes...
           </p>
         </div>
       </section>
@@ -154,6 +203,14 @@ const ContactSection = () => {
               <Calendar className="w-6 h-6 text-yellow-600" />
               <span>Demande de devis</span>
             </h3>
+
+            {/* Error Message */}
+            {submitState.error && (
+              <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
+                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <div className="text-red-700">{submitState.error}</div>
+              </div>
+            )}
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-4">
@@ -167,7 +224,8 @@ const ContactSection = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    disabled={submitState.isSubmitting}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                     placeholder="Votre nom"
                   />
                 </div>
@@ -182,7 +240,8 @@ const ContactSection = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    disabled={submitState.isSubmitting}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                     placeholder="votre.email@example.com"
                   />
                 </div>
@@ -198,7 +257,8 @@ const ContactSection = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    disabled={submitState.isSubmitting}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                     placeholder="01 23 45 67 89"
                   />
                 </div>
@@ -212,7 +272,8 @@ const ContactSection = () => {
                     value={formData.eventType}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    disabled={submitState.isSubmitting}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                   >
                     <option value="">Sélectionnez...</option>
                     <option value="mariage">Mariage</option>
@@ -233,7 +294,8 @@ const ContactSection = () => {
                     name="eventDate"
                     value={formData.eventDate}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    disabled={submitState.isSubmitting}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                   />
                 </div>
                 
@@ -247,7 +309,8 @@ const ContactSection = () => {
                     value={formData.guests}
                     onChange={handleInputChange}
                     min="1"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    disabled={submitState.isSubmitting}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                     placeholder="50"
                   />
                 </div>
@@ -262,17 +325,28 @@ const ContactSection = () => {
                   value={formData.message}
                   onChange={handleInputChange}
                   rows="4"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
+                  disabled={submitState.isSubmitting}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none disabled:bg-gray-100 disabled:cursor-not-allowed"
                   placeholder="Décrivez-nous votre projet, vos besoins spécifiques, le lieu de réception..."
                 ></textarea>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-yellow-600 text-white py-4 rounded-lg hover:bg-yellow-700 transition-colors font-semibold flex items-center justify-center space-x-2 group"
+                disabled={submitState.isSubmitting}
+                className="w-full bg-yellow-600 text-white py-4 rounded-lg hover:bg-yellow-700 transition-colors font-semibold flex items-center justify-center space-x-2 group disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                <span>Envoyer ma demande</span>
+                {submitState.isSubmitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Envoi en cours...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    <span>Envoyer ma demande</span>
+                  </>
+                )}
               </button>
             </form>
           </div>
