@@ -55,7 +55,7 @@ async def health_check():
     """Health check endpoint"""
     try:
         # Test database connection
-        await db.admin.command('ismaster')
+        await client.admin.command('ismaster')
         return {"status": "healthy", "database": "connected"}
     except Exception as e:
         return {"status": "unhealthy", "database": "disconnected", "error": str(e)}
