@@ -8,10 +8,11 @@ from pathlib import Path
 from contextlib import asynccontextmanager
 
 # Import routers
-from routers import packages, photobooth, contact, testimonials
+from routers import packages, photobooth, contact, testimonials, auth, admin
 
 # Import services
 from services.data_seeder import seed_initial_data
+from services.admin_seeder import seed_admin_user
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
