@@ -72,6 +72,8 @@ app.include_router(contact.router)
 app.include_router(testimonials.router)
 app.include_router(auth.router)
 app.include_router(admin.router)
+app.include_router(upload.router)
+app.include_router(static.router)
 
 app.add_middleware(
     CORSMiddleware,
