@@ -6,7 +6,7 @@ const API_BASE = `${BACKEND_URL}/api`;
 // Create axios instance for admin API
 const adminClient = axios.create({
   baseURL: API_BASE,
-  timeout: 10000,
+  timeout: 30000, // Increased for file uploads
   headers: {
     'Content-Type': 'application/json',
   }
@@ -168,6 +168,60 @@ export const deleteGalleryItem = async (itemId) => {
     return response.data;
   } catch (error) {
     throw new Error('Erreur lors de la suppression de l\'élément');
+  }
+};
+
+// Upload
+export const uploadFile = async (file, metadata) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('title', metadata.title);
+    
+    if (metadata.description) {
+      formData.append('description', metadata.description);
+    }
+    if (metadata.event_type) {
+      formData.append('event_type', metadata.event_type);
+    }
+    formData.append('is_featured', metadata.is_featured ? 'true' : 'false');
+
+    const response = await adminClient.post('/upload/file', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      timeout: 60000, // 60 seconds for file upload
+      onUploadProgress: (progressEvent) => {
+        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        console.log(`Upload Progress: ${percentCompleted}%`);
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    if (error.response?.data?.detail) {
+      throw new Error(error.response.data.detail);
+    }
+    throw new Error('Erreur lors de l\'upload du fichier');
+  }
+};
+
+export const getUploadInfo = async () => {
+  try {
+    const response = await adminClient.get('/upload/info');
+    return response.data;
+  } catch (error) {
+    throw new Error('Erreur lors de la récupération des informations d\'upload');
+  }
+};
+
+// Health check
+export const healthCheck = async () => {
+  try {
+    const response = await adminClient.get('/health');
+    return response.data;
+  } catch (error) {
+    throw new Error(`Service indisponible: ${error.message}`);
   }
 };
 
