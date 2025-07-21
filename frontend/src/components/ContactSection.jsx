@@ -150,8 +150,8 @@ const ContactSection = () => {
                   <div>
                     <div className="text-white font-semibold">Adresse</div>
                     <div className="text-gray-300">
-                      123 Rue de l'Événement<br />
-                      75001 Paris, France
+                      3 rue Georges Queva<br />
+                      62218 Loison sous Lens, France
                     </div>
                   </div>
                 </div>
