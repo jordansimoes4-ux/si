@@ -18,6 +18,7 @@ import Login from "./pages/admin/Login";
 import Dashboard from "./pages/admin/Dashboard";
 import ContactRequests from "./pages/admin/ContactRequests";
 import Testimonials from "./pages/admin/Testimonials";
+import Gallery from "./pages/admin/Gallery";
 
 // Protected Route Component
 import ProtectedRoute from "./components/ProtectedRoute";
