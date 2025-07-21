@@ -39,11 +39,31 @@ const Home = () => {
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin/login" element={<Login />} />
+            
+            {/* Protected Admin Routes */}
+            <Route path="/admin/*" element={
+              <ProtectedRoute>
+                <AdminLayout>
+                  <Routes>
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="contact-requests" element={<ContactRequests />} />
+                    <Route path="testimonials" element={<Testimonials />} />
+                    <Route path="" element={<Dashboard />} />
+                  </Routes>
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </div>
   );
 }
