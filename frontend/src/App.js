@@ -57,6 +57,7 @@ function App() {
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="contact-requests" element={<ContactRequests />} />
                     <Route path="testimonials" element={<Testimonials />} />
+                    <Route path="gallery" element={<Gallery />} />
                     <Route path="" element={<Dashboard />} />
                   </Routes>
                 </AdminLayout>
