@@ -189,10 +189,10 @@ const ContactSection = () => {
                 Pour toute urgence le jour de votre événement :
               </p>
               <a 
-                href="tel:+33612345678" 
+                href="tel:+33987124695" 
                 className="text-yellow-400 font-semibold text-lg hover:underline"
               >
-                06 12 34 56 78
+                09 87 12 46 95
               </a>
             </div>
           </div>
