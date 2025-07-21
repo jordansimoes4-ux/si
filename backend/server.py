@@ -8,7 +8,7 @@ from pathlib import Path
 from contextlib import asynccontextmanager
 
 # Import routers
-from routers import packages, photobooth, contact, testimonials, auth, admin
+from routers import packages, photobooth, contact, testimonials, auth, admin, upload, static
 
 # Import services
 from services.data_seeder import seed_initial_data
