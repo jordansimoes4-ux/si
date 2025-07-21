@@ -70,6 +70,8 @@ app.include_router(packages.router)
 app.include_router(photobooth.router)
 app.include_router(contact.router)
 app.include_router(testimonials.router)
+app.include_router(auth.router)
+app.include_router(admin.router)
 
 app.add_middleware(
     CORSMiddleware,
