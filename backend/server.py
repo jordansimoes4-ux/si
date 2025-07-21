@@ -31,6 +31,7 @@ async def lifespan(app: FastAPI):
     # Seed initial data
     try:
         await seed_initial_data(db)
+        await seed_admin_user(db)
         logging.info("Database initialization completed")
     except Exception as e:
         logging.error(f"Error seeding database: {e}")
