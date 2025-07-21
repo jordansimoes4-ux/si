@@ -21,7 +21,7 @@ class ContactRequestCreate(BaseModel):
     email: EmailStr
     phone: Optional[str] = None
     event_type: str
-    event_date: Optional[date] = None
+    event_date: Optional[str] = None
     guests: Optional[int] = None
     message: Optional[str] = None
 
