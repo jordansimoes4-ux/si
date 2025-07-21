@@ -121,8 +121,8 @@ const Footer = () => {
               <div className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
                 <div className="text-gray-400 text-sm">
-                  123 Rue de l'Événement<br />
-                  75001 Paris, France
+                  3 rue Georges Queva<br />
+                  62218 Loison sous Lens, France
                 </div>
               </div>
             </div>
